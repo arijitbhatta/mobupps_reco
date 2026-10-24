@@ -1,11 +1,4 @@
-# Data Preparation & Modelling Plan
-MobUpps — Senior Data Scientist Take-Home
 
-> This is the **plan**, not the solution. It records the decisions we intend to make, the
-> reasoning behind each, and the order of work. Nothing below is "done" yet; it is what we
-> will build and defend.
-
----
 
 ## 0. Problem statement
 
