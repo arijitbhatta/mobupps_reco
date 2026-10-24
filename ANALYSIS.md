@@ -1,10 +1,4 @@
-# Written Analysis
 
-Senior Data Scientist Take-Home — MobUpps
-
-This answers the five questions in §5 of the assignment, then the data-quality
-findings in §6. Most of the reasoning is here rather than in the code, since
-that's the part of the exercise that actually gets graded.
 
 ---
 
