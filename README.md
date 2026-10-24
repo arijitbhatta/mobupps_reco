@@ -377,6 +377,3 @@ sql/
 tests/test_reco.py
 ```
 
-Notes for the reviewer: the dataset is not committed (assume `data/` is mounted
-at the documented path); `.venv/`, `__pycache__/`, `.pytest_cache/` are ignored;
-everything is in English.
