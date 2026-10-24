@@ -84,6 +84,37 @@ af_view -> af_click -> af_install -> af_open -> af_complete_registration -> af_l
 Note `af_open` is post-install (you're opening an app you already installed), so
 the acquisition barrier is between `af_click` and `af_install`.
 
+### Filtering and imputation
+
+The data is mostly clean, so little is dropped. The complete list, so nothing
+is hidden inside a default:
+
+Filtering (candidates/rows excluded):
+
+- `blocked` apps (66 of 500) are never scored and never sampled as negatives;
+  `paused` apps (55) are kept, since that reflects an ad-campaign state, not
+  usable-ness.
+- Sampled negatives are restricted to the user's platform and to apps they never
+  touched.
+- Unparseable `event_time` would be dropped, but with `format="mixed"` every row
+  parses, so nothing is lost here (the 493 no-microsecond rows are recovered,
+  not discarded).
+- Cross-platform interactions (6,182 rows, 1.3%) are kept and encoded as
+  `is_same_platform` rather than deleted.
+
+Imputation (fills only, no rows removed):
+
+- `country_code` (30 null) -> the `"<UNK>"` sentinel.
+- The 245 apps missing from `apps.csv` have no metadata; where a category is
+  needed it becomes `"<UNK>"`. They can never be recommended (nothing to score),
+  but their events still count toward user aggregates.
+- App rating count is stored as `log1p(total_ratings)`, 0-filled if missing
+  (defensive; there are none in this data).
+- Popularity for never-seen apps is 0 (`log1p(0)`).
+- `duration_seconds` (9,807 null) is deliberately not imputed and not used as a
+  feature: the nulls sit on the highest-value open/post-install events, and
+  filling them would fabricate signal exactly where it matters most.
+
 ---
 
 ## 2. Features and label

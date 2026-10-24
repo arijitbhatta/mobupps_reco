@@ -66,6 +66,26 @@ that "same platform" and "already-liked category" dominate. That's the shape
 that points at a feature-based GBDT rather than a latent model (§5.2), and the
 245 single-touch apps are a hard ceiling on any retrieval metric (§5.3).
 
+### Filtering and imputation
+
+The data is mostly clean, so the preparation is light, but it does exist and
+should be stated rather than hidden in a default. Filtering (exclusions): 66
+`blocked` apps are never scored and never sampled as negatives (55 `paused`
+apps are kept, that's a campaign state not an app state); negative sampling is
+restricted to same-platform, never-touched apps; and any unparseable
+`event_time` would be dropped (with `format="mixed"` none are, the 493
+no-microsecond rows are recovered, not discarded). Cross-platform interactions
+(6,182 rows, 1.3%) are kept, not removed, and encoded as `is_same_platform`.
+
+Imputation (fills, no rows removed): the 30 null `country_code` values become
+the `"<UNK>"` sentinel; the 245 metadata-less apps get `"<UNK>"` category where
+one is needed (they're never recommended, but their events still count in user
+aggregates); `total_ratings` is stored as `log1p(...)` with a 0-fill if missing
+(defensive, none are); popularity for never-seen apps is 0. `duration_seconds`
+(9,807 null) is deliberately neither imputed nor used, since the nulls sit
+on the highest-value open/post-install events and filling them would fabricate
+signal precisely where it matters most.
+
 ---
 
 ## 5.1 Target and signal definition
