@@ -2,6 +2,72 @@
 
 ---
 
+## Data profile
+
+Before the model, the headline facts about the dataset, all computed from the
+three CSVs.
+
+Volumes:
+
+| Table | Rows | Notes |
+|---|---|---|
+| users.csv | 10,000 | but 10,244 distinct users appear in interactions (244 extra) |
+| apps.csv | 500 | but 685 distinct apps appear in interactions (185 extra) |
+| interactions.csv | 490,382 | 311,849 distinct (user, app) pairs |
+
+Event mix (the funnel, computed over all events):
+
+| event_name | count | share |
+|---|---|---|
+| af_view | 206,764 | 42.2% |
+| af_click | 107,232 | 21.9% |
+| af_install | 24,638 | 5.0% |
+| af_open | 97,862 | 20.0% |
+| af_complete_registration | 19,610 | 4.0% |
+| af_level_achieved | 9,724 | 2.0% |
+| af_purchase | 24,552 | 5.0% |
+
+So the log is top-heavy: 64.1% of events are `af_view` + `af_click`, which
+matters a lot for how the evaluation reads (a popularity list scores cheap hits
+on those). The acquisition-and-beyond events (install through purchase) are
+36%, and that's what the pointwise label targets.
+
+Shape and sparsity:
+
+- Density is 4.4%: 311,849 observed pairs out of 7.0 million possible.
+- Users are shallow: median 22 interactions but only 20 distinct apps, so ~1.1
+  events per (user, app). There is almost no repeat/sequence signal.
+- Apps are a long tail: median 389 distinct users per app, but 245 apps are
+  touched by exactly one user (and those 245 are the ones missing from
+  apps.csv). The top app reaches 2,217 distinct users.
+- 1,468 users have fewer than 5 interactions, so they're cold by the harness'
+  definition and never enter the test set.
+
+Platform is a near-hard constraint:
+
+| dimension | android | ios |
+|---|---|---|
+| users | 5,474 | 4,526 |
+| apps | 288 | 212 |
+
+98.7% of interactions are same-platform (6,182 cross-platform rows, 1.3%).
+This is why the candidate filter and the negative pool both restrict to a
+user's platform, and why `is_same_platform` contributes little to the tree
+after that filter.
+
+Other things worth knowing: app status is 379 active / 66 blocked / 55 paused;
+the age buckets peak at 25-34 (3,460 users) then 35-44 (2,520); countries are
+US / UK / DE / IN / FR heavy; 30 rows have a null country_code. The log spans
+149 days (2026-01-30 to 2026-06-29), not the ~90 the docs claim.
+
+The actionable takeaway from all of this: it's a small, sparse, tabular,
+long-tail-heavy implicit-feedback corpus, platform-gated, with a strong prior
+that "same platform" and "already-liked category" dominate. That's the shape
+that points at a feature-based GBDT rather than a latent model (§5.2), and the
+245 single-touch apps are a hard ceiling on any retrieval metric (§5.3).
+
+---
+
 ## 5.1 Target and signal definition
 
 The log has seven event types that form one acquisition/engagement funnel:

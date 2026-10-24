@@ -58,7 +58,7 @@ in separate rows. Prep does four things (`reco/data.py`, `reco/features.py`):
    pandas' default parser silently drops the 493 no-microsecond rows. Annoying
    bug, cost me an afternoon.
 2. **Validate** schema, primary keys, and referential integrity. This produces
-   the data-quality report (8 findings, summarised in `ANALYSIS.md` §7). The
+   the data-quality report (8 findings, summarised in `ANALYSIS.md` §6). The
    ones that matter most: 245 users and 245 apps appear in interactions but not
    in their own tables (actually the same 245 single-touch items, which puts a
    hard ceiling on recall), and `af_purchase` / `af_complete_registration` /
