@@ -127,6 +127,48 @@ train  = events[:-n_test]                       # 5 oldest
 test   = events[-n_test:]                       # the "future"
 ```
 
+### Worked example: one real user
+
+Here is `u_000000` (iOS, France, age 25-34) as it appears in the raw
+`interactions.csv`:
+
+| time | app | event | interaction_type | duration_s | source |
+|---|---|---|---|---|---|
+| 2026-04-06 13:21 | a_0241 | af_install | install | 70 | facebook_ads |
+| 2026-04-11 19:41 | a_0278 | af_click | click | 6 | organic |
+| 2026-04-22 02:22 | a_0379 | af_view | view | 11 | facebook_ads |
+| 2026-04-23 02:23 | a_0061 | af_click | click | 55 | facebook_ads |
+| 2026-04-28 16:36 | a_0069 | af_click | click | 24 | organic |
+| 2026-04-29 10:19 | a_0092 | af_purchase | open | 123 | googleadwords_int |
+
+The split cuts this list by count. Six events, so `n_test = max(1, int(6 *
+0.20)) = 1`: the last event (`a_0092`, a purchase) is held out as test, the
+first five are train.
+
+```
+train: a_0241  af_install
+       a_0278  af_click
+       a_0379  af_view
+       a_0061  af_click
+       a_0069  af_click
+test:  a_0092  af_purchase   <- "the future" the model must predict
+```
+
+The train events then collapse to five `(user, app)` pairs, one per distinct
+app, labelled by the strongest event in that pair:
+
+| app | strongest event | pointwise label | pointwise weight |
+|---|---|---|---|
+| a_0241 | af_install | 1 | 2 |
+| a_0278 | af_click | 0 | 1 |
+| a_0379 | af_view | 0 | 1 |
+| a_0061 | af_click | 0 | 1 |
+| a_0069 | af_click | 0 | 1 |
+
+Five sampled negatives (unobserved apps, label 0) get added to those five rows,
+so this user contributes 10 rows to the training matrix. The model is evaluated
+on whether `a_0092` shows up in its top-k for this user.
+
 | Split | Interactions |
 |---|---|
 | Train | 396,677 |
