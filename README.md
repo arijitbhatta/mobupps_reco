@@ -21,6 +21,9 @@ python -m pytest tests/ -q                    # 7 tests
 python -m reco.data_to_report                 # data-quality report
 python -m reco.evaluate --objective all       # headline evaluation
 python -m reco.feature_importance --objective all
+
+# exploratory analysis as a notebook
+jupyter notebook scripts/data_analysis.ipynb
 ```
 
 Data is auto-discovered at `./data`; override with `--data-dir /path/to/data`.
@@ -327,7 +330,9 @@ top.
 
 ```
 data/                       # mounted dataset (NOT committed)
-scripts/evaluate.py         # provided harness
+scripts/
+  evaluate.py               # provided harness
+  data_analysis.ipynb       # exploratory data analysis
 reco/
   config.py                 # funnel, weights, features, objectives
   data.py                   # load + validate + DQ report

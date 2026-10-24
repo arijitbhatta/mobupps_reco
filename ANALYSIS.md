@@ -27,7 +27,7 @@ Event mix (the funnel, computed over all events):
 | af_level_achieved | 9,724 | 2.0% |
 | af_purchase | 24,552 | 5.0% |
 
-So the log is top-heavy: 64.1% of events are `af_view` + `af_click`, which
+So the log is top-heavy: 64.0% of events are `af_view` + `af_click`, which
 matters a lot for how the evaluation reads (a popularity list scores cheap hits
 on those). The acquisition-and-beyond events (install through purchase) are
 36%, and that's what the pointwise label targets.
